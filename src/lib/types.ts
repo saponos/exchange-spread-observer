@@ -1,0 +1,1 @@
+export type OrderBookDepthLevel = [price: number, size: number, count: number];
