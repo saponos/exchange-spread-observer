@@ -7,5 +7,7 @@ export const calculateSpread = (midPrice: number, bid: number, ask: number): num
 };
 
 export const calculateAverageSpread = (spreads: number[]): number => {
+  if (spreads.length === 0) return 0;
+
   return spreads.reduce((acc, curr) => acc + curr, 0) / spreads.length;
 };
