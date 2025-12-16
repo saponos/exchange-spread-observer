@@ -8,9 +8,9 @@ let restClientInstance: AxiosInstance | null = null;
 
 export async function getOrderBookDepthBySymbolPair(symbol: string): Promise<OrderBookDepthData> {
   const client = await getRestClient();
-  const response = (await (await client).get(
+  const response = await client.get(
     `/api/v1/contract/depth/${symbol}`
-  )) as AxiosResponse<OrderBookDepthResponse>;
+  ) as AxiosResponse<OrderBookDepthResponse>;
 
   return response.data.data;
 }
