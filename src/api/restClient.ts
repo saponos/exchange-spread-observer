@@ -32,6 +32,7 @@ export const getRestClient = decorateFunction(async (): Promise<AxiosInstance> =
     headers: {
       'Content-Type': 'application/json',
     },
+    timeout: 10_000,
   });
 
   logger.info(`Rest client connected to ${restClientInstance.defaults.baseURL}`);

@@ -1,16 +1,27 @@
 import { BestPricesDto, OrderBookDepthData } from '../../lib/interfaces';
 
-export async function bestPricesBto(orderBookDepth: OrderBookDepthData): Promise<BestPricesDto> {
-  const bestBid = orderBookDepth.bids.shift();
-  const bestAsk = orderBookDepth.asks.shift();
-  const bestBidPrice = Number(bestBid?.shift() ?? 0);
-  const bestAskPrice = Number(bestAsk?.shift() ?? 0);
+export function extractBestPrices(orderBookDepth: OrderBookDepthData): BestPricesDto {
+  if (orderBookDepth.bids.length === 0 || orderBookDepth.asks.length === 0) {
+    throw new Error('Order book depth is empty - missing bids or asks');
+  }
 
-  const bestPricesDto: BestPricesDto = {
+  const bestBid = orderBookDepth.bids[0];
+  const bestAsk = orderBookDepth.asks[0];
+  
+  if (!bestBid || !bestAsk) {
+    throw new Error('Invalid order book data structure');
+  }
+
+  const bestBidPrice = Number(bestBid[0] ?? 0);
+  const bestAskPrice = Number(bestAsk[0] ?? 0);
+
+  if (bestBidPrice <= 0 || bestAskPrice <= 0) {
+    throw new Error('Invalid bid or ask price - must be greater than 0');
+  }
+
+  return {
     bid: bestBidPrice,
     ask: bestAskPrice,
     timestamp: orderBookDepth.timestamp,
   };
-
-  return bestPricesDto;
 }

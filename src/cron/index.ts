@@ -1,7 +1,4 @@
 import cron from 'node-cron';
-import { getAverageSpread, getOrderBookDepth } from '../core/orderBook/orderBook.service';
+import { cronJobsOnEveryMinute } from './oneMinuteJobs';
 
-cron.schedule('* * * * *', async () => {
-  await getOrderBookDepth();
-  await getAverageSpread();
-});
+cron.schedule('* * * * *', () => cronJobsOnEveryMinute());
