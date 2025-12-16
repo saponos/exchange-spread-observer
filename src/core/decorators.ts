@@ -8,10 +8,14 @@ export function decorateFunction<TArgs extends unknown[], TReturn>(
   fn: (...args: TArgs) => Promise<TReturn>,
   decorators: Array<FunctionDecorator<TArgs, TReturn>>
 ): (...args: TArgs) => Promise<TReturn> {
-  return decorators.reduce((wrappedFn, decorator) => decorator(wrappedFn), fn);
+  let wrappedFn: (...args: TArgs) => Promise<TReturn> = fn;
+  for (const decorator of decorators) {
+    wrappedFn = decorator(wrappedFn);
+  }
+  return wrappedFn;
 }
 
-export function HandleErrors(errorHandler?: (error: unknown) => void) {
+export function HandleErrors(errorHandler?: (error: unknown) => void | Promise<void>) {
   return <TArgs extends unknown[], TReturn>(
     fn: (...args: TArgs) => Promise<TReturn>
   ): ((...args: TArgs) => Promise<TReturn>) => {
@@ -22,7 +26,10 @@ export function HandleErrors(errorHandler?: (error: unknown) => void) {
         return await fn(...args);
       } catch (error) {
         if (errorHandler) {
-          errorHandler(error);
+          const result = errorHandler(error);
+          if (result instanceof Promise) {
+            await result;
+          }
         } else {
           logger.error(`[${functionName}] Error:`, error);
         }
