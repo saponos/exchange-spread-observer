@@ -40,14 +40,13 @@ const consoleFormat = isDocker
 export const logger = createLogger({
   level: process.env.LOG_LEVEL ?? 'info',
   format: logFormat,
-  defaultMeta: { service: 'exchange-spread-observer' },
   transports: [
     new transports.File({
       filename: path.join(logsDir, 'error.log'),
       level: 'error',
     }),
     new transports.File({
-      filename: path.join(logsDir, 'combined.log'),
+      filename: path.join(logsDir, 'app.log'),
     }),
     new transports.Console({
       format: consoleFormat,
