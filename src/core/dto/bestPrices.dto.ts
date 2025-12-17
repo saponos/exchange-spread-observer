@@ -7,13 +7,8 @@ export function extractBestPrices(orderBookDepth: OrderBookDepthData): BestPrice
 
   const bestBid = orderBookDepth.bids[0];
   const bestAsk = orderBookDepth.asks[0];
-  
-  if (!bestBid || !bestAsk) {
-    throw new Error('Invalid order book data structure');
-  }
 
-  const bestBidPrice = Number(bestBid[0] ?? 0);
-  const bestAskPrice = Number(bestAsk[0] ?? 0);
+  const [bestBidPrice, bestAskPrice] = [bestBid[0], bestAsk[0]].map(Number) as [number, number];
 
   if (bestBidPrice <= 0 || bestAskPrice <= 0) {
     throw new Error('Invalid bid or ask price - must be greater than 0');

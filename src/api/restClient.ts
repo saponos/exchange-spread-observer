@@ -1,23 +1,25 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 
-import { logger } from '../core/logger';
-import { OrderBookDepthData, OrderBookDepthResponse } from '../lib/interfaces';
 import { decorateFunction, HandleErrors } from '../core/decorators';
+import { logger } from '../core/logger';
+import { EXCHANGE_NAME } from '../lib/const';
+import { type OrderBookDepthData, type OrderBookDepthResponse } from '../lib/interfaces';
+import { createErrorHandler } from '../lib/utils';
 
 let restClientInstance: AxiosInstance | null = null;
 
 export async function getOrderBookDepthBySymbolPair(symbol: string): Promise<OrderBookDepthData> {
   const client = await getRestClient();
-  const response = await client.get(
+  const response: AxiosResponse<OrderBookDepthResponse> = await client.get(
     `/api/v1/contract/depth/${symbol}`
-  ) as AxiosResponse<OrderBookDepthResponse>;
+  );
 
   return response.data.data;
 }
 
-export const getRestClient = decorateFunction(async (): Promise<AxiosInstance> => {
+const getRestClientImpl = (): Promise<AxiosInstance> => {
   if (restClientInstance) {
-    return restClientInstance;
+    return Promise.resolve(restClientInstance);
   }
 
   const baseURL = process.env.EXCHANGE_HTTP_BASE_URL;
@@ -35,11 +37,11 @@ export const getRestClient = decorateFunction(async (): Promise<AxiosInstance> =
     timeout: 10_000,
   });
 
-  logger.info(`Rest client connected to ${restClientInstance.defaults.baseURL}`);
+  logger.info(`Connected to ${EXCHANGE_NAME} REST API at ${restClientInstance.defaults.baseURL}`);
 
-  return restClientInstance;
-}, [
-  HandleErrors((error) => {
-    logger.error('Error in getRestClient', error);
-  }),
+  return Promise.resolve(restClientInstance);
+};
+
+export const getRestClient = decorateFunction(getRestClientImpl, [
+  HandleErrors(createErrorHandler('Error in getRestClient')),
 ]);

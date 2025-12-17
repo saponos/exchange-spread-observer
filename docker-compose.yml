@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   redis:
     image: redis:7-alpine
@@ -22,12 +20,11 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: exchange-spread-observer
+    env_file:
+      - .env
     environment:
-      - NODE_ENV=production
       - DOCKER=true
       - LOG_LEVEL=${LOG_LEVEL:-info}
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
     volumes:
       - ./logs:/app/logs
     depends_on:
