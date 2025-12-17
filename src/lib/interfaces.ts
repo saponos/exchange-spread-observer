@@ -1,9 +1,19 @@
 import { OrderBookDepthLevel } from './types';
 
-export interface Channel {
+export interface ChannelToSubscribe {
   method: string;
   param: Record<string, unknown>;
   gzip?: boolean;
+}
+
+export interface ChannelToPublish {
+  channel: string;
+  handler: (data: unknown) => unknown;
+}
+
+export interface Channel {
+  channelToSubscribe: ChannelToSubscribe;
+  channelToPublish: ChannelToPublish;
 }
 
 export interface OrderBookDepthData {

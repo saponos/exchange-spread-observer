@@ -2,8 +2,9 @@
 import WebSocket, { type WebSocket as WebSocketType } from 'ws';
 
 import { logger } from '../core/logger';
+import { channels } from '../core/ws.channels';
 import { EXCHANGE_NAME, PING_INTERVAL, PONG_TIMEOUT, WS_URL } from '../lib/const';
-import { Channel, TickerMessage } from '../lib/interfaces';
+import { TickerMessage } from '../lib/interfaces';
 
 type MessageHandler = (data: unknown) => unknown;
 
@@ -51,6 +52,7 @@ export async function initWebSocket(): Promise<void> {
     wsClient.on('open', () => {
       logger.info(`Connected to ${EXCHANGE_NAME} WebSocket at ${WS_URL}`);
       startPingPong();
+      subscribeTo();
       resolve();
     });
 
@@ -109,45 +111,14 @@ export async function initWebSocket(): Promise<void> {
   });
 }
 
-export function closeWebSocket(): void {
-  if (wsClient) {
-    clearTimers();
-    wsClient.close();
-    wsClient = null;
-    logger.info('WebSocket connection closed');
-  }
-}
-
-export function getWebSocket(): WebSocketType | null {
-  return wsClient;
-}
-
-export function isWebSocketConnected(): boolean {
-  return wsClient !== null && wsClient.readyState === WebSocket.OPEN;
-}
-
-export function subscribeTo(
-  channel: Channel,
-  handler: { channel: string; handler: MessageHandler }
-): void {
+export function subscribeTo(): void {
   if (!wsClient || wsClient.readyState !== WebSocket.OPEN) {
     logger.error('WebSocket is not connected. Cannot subscribe.');
     return;
   }
 
-  wsClient.send(JSON.stringify(channel));
-  channelHandlers.push(handler);
-}
-
-export function unsubscribeFrom(channel: { method: string; param: Record<string, unknown> }): void {
-  if (!wsClient || wsClient.readyState !== WebSocket.OPEN) {
-    logger.error('WebSocket is not connected. Cannot unsubscribe.');
-    return;
+  for (const channel of channels) {
+    wsClient.send(JSON.stringify(channel.channelToSubscribe));
+    channelHandlers.push(channel.channelToPublish);
   }
-
-  wsClient.send(JSON.stringify(channel));
-}
-
-export function onChannel(handler: { channel: string; handler: MessageHandler }): void {
-  channelHandlers.push(handler);
 }

@@ -1,6 +1,6 @@
 import { schedule } from 'node-cron';
 
-import { getAverageSpread, getOrderBookDepth } from '../core/orderBook/orderBook.service';
+import { getAverageSpread, getOrderBookDepth } from '../services/orderBook/orderBook.service';
 
 schedule('* * * * *', async () => {
   await getOrderBookDepth();
