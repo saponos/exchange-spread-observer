@@ -1,6 +1,6 @@
+import { logger } from '../../core/logger';
+import { decorateFunction, HandleErrors, LogWith } from '../../lib/decorators';
 import { createErrorHandler } from '../../lib/utils';
-import { decorateFunction, HandleErrors, LogWith } from '../decorators';
-import { logger } from '../logger';
 
 import {
   getOrderBookDepthImpl,

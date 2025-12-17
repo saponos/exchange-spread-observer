@@ -1,4 +1,4 @@
-import { BestPricesDto, OrderBookDepthData } from '../../lib/interfaces';
+import { BestPricesDto, OrderBookDepthData } from '../lib/interfaces';
 
 export function extractBestPrices(orderBookDepth: OrderBookDepthData): BestPricesDto {
   if (orderBookDepth.bids.length === 0 || orderBookDepth.asks.length === 0) {

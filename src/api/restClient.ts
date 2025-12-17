@@ -1,8 +1,8 @@
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 
-import { decorateFunction, HandleErrors } from '../core/decorators';
 import { logger } from '../core/logger';
 import { EXCHANGE_NAME } from '../lib/const';
+import { decorateFunction, HandleErrors } from '../lib/decorators';
 import { type OrderBookDepthData, type OrderBookDepthResponse } from '../lib/interfaces';
 import { createErrorHandler } from '../lib/utils';
 
